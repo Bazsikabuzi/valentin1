@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Valentine 💖</title>
+<style>
+body {
+    background: linear-gradient(to right, #ffdde1, #ee9ca7);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+}
+
+h1 {
+    font-size: 50px;
+    color: white;
+    z-index: 2;
+    position: relative;
+}
+
+.buttons {
+    margin-top: 30px;
+    z-index: 2;
+    position: relative;
+    height: 150px;
+    width: 100%;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 22px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    position: absolute;
+    transition: all 0.2s ease;
+}
+
+#yesBtn {
+    background: #4CAF50;
+    color: white;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#noBtn {
+    background: #ff4d4d;
+    color: white;
+    left: 30%;
+    top: 50%;
+}
+
+.heart {
+    position: absolute;
+    color: red;
+    font-size: 20px;
+    animation: floatUp 5s linear infinite;
+    user-select: none;
+    pointer-events: none;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(100vh) scale(0.5); opacity:0.5; }
+    50% { opacity:1; }
+    100% { transform: translateY(-50px) scale(1); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" loop>
+    <source src="zene.mp3" type="audio/mpeg">
+</audio>
+
+<div>
+    <h1>Will you be my Valentine? 💖</h1>
+    <div class="buttons">
+        <button id="yesBtn">YES 🥰</button>
+        <button id="noBtn">NO 😢</button>
+    </div>
+</div>
+
+<script>
+let yesBtn = document.getElementById("yesBtn");
+let noBtn = document.getElementById("noBtn");
+let music = document.getElementById("bgMusic");
+let size = 1;
+
+// zene elindítása az első kattintásra (mobil és desktop)
+document.addEventListener("click", () => {
+    music.play();
+}, { once: true });
+
+// NO gomb elkerülő logika – mindig a képernyőn belül marad
+document.addEventListener("mousemove", (e) => {
+    const rect = noBtn.getBoundingClientRect();
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+    const safeDistance = 100; // milyen közel engedjük a kurzort
+
+    if(mouseX > rect.left - safeDistance && mouseX < rect.right + safeDistance &&
+       mouseY > rect.top - safeDistance && mouseY < rect.bottom + safeDistance){
+        
+        const widthLimit = window.innerWidth - rect.width;
+        const heightLimit = window.innerHeight - rect.height;
+
+        let newX = rect.left;
+        let newY = rect.top;
+
+        // mozduljon el a kurzorral ellentétes irányba
+        if(mouseX < rect.left) newX += 50; else newX -= 50;
+        if(mouseY < rect.top) newY += 50; else newY -= 50;
+
+        // **határok ellenőrzése**, ne menjen ki a képernyőről
+        newX = Math.max(0, Math.min(widthLimit, newX));
+        newY = Math.max(0, Math.min(heightLimit, newY));
+
+        noBtn.style.left = newX + "px";
+        noBtn.style.top = newY + "px";
+    }
+});
+
+// NO gomb → YES gomb növekedése
+noBtn.addEventListener("click", function(){
+    size += 0.35;
+    yesBtn.style.transform = "translate(-50%, -50%) scale(" + size + ")";
+});
+
+// YES gomb → végső üzenet, zene nem áll le
+yesBtn.addEventListener("click", function(){
+    document.querySelector("h1").innerHTML = "YAAAAAY 💖💖💖<br>I LOVE YOU ❤️";
+});
+
+// lebegő szívecskék
+function createHeart(){
+    let heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = "❤️";
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.fontSize = (10 + Math.random()*30) + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+}
+setInterval(createHeart, 400);
+
+</script>
+</body>
+</html>
